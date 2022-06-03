@@ -43,5 +43,7 @@
 	<false/>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Crumbs needs to use your current location to plot your walking path.</string>
 </dict>
 </plist>

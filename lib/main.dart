@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:crumbs/tabs/trail.dart';
+import 'package:crumbs/tabs/trail/trail.dart';
 
 void main() {
   runApp(const App());
@@ -34,6 +34,8 @@ class _HomePageState extends State<HomePage> {
 
   static final List<Widget> _tabs = [
     const TrailTab(key: Key('trail_tab')),
+    Container(color: Colors.green),
+    Container(color: Colors.blue),
   ];
 
   void _onItemTapped(int index) {

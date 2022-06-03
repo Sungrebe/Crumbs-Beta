@@ -32,9 +32,9 @@ class _TrailTabState extends State<TrailTab> {
             case ConnectionState.active:
             case ConnectionState.done:
               if (permission == LocationPermission.whileInUse || permission == LocationPermission.always) {
-                body = const TrailMap();
+                body = const TrailMap(key: Key('trail_map'));
               }
-              
+
               break;
           }
         }

@@ -1,8 +1,15 @@
-import 'package:flutter/material.dart';
+import 'package:crumbs/model/location_marker.dart';
 import 'package:crumbs/tabs/trail/trail.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const App());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => Trail([]),
+      child: const App(),
+    )
+  );
 }
 
 class App extends StatelessWidget {
@@ -34,8 +41,8 @@ class _HomePageState extends State<HomePage> {
 
   static final List<Widget> _tabs = [
     const TrailTab(key: Key('trail_tab')),
-    Container(color: Colors.green),
-    Container(color: Colors.blue),
+    const SizedBox.expand(),
+    const SizedBox.expand(),
   ];
 
   void _onItemTapped(int index) {

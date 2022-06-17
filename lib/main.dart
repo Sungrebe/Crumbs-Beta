@@ -4,12 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 void main() {
-  runApp(
-    ChangeNotifierProvider(
-      create: (context) => Trail([]),
-      child: const App(),
-    )
-  );
+  runApp(ChangeNotifierProvider(
+    create: (context) => Trail([]),
+    child: const App(),
+  ));
 }
 
 class App extends StatelessWidget {

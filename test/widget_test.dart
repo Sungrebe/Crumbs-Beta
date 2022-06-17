@@ -1,5 +1,5 @@
+import 'package:crumbs/globals.dart';
 import 'package:crumbs/main.dart' as app;
-import 'package:crumbs/tabs/trail/trail.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -18,26 +18,23 @@ void main() {
     });
 
     testWidgets('Trail map loads successfully', (WidgetTester tester) async {
-      await tester.pumpWidget(
-        StatefulBuilder(builder: (BuildContext context, StateSetter setState) {
-          return const MaterialApp(
-            home: Scaffold(
-              body: TrailTab(),
-            ),
-          );
-        })
-      );
-
-      find.byKey(const Key('trail_tab'));
-      matchesGoldenFile('initial.png');
-
       const MethodChannel('flutter.baseflow.com/geolocator').setMockMethodCallHandler((call) async {
-        if (call.method == 'requestPermission') {
+        if (call.method == 'getCurrentPosition') {
           await tester.pump(Duration.zero);
-          expectLater(
-            find.byKey(const Key('trail_map')), 
-            matchesGoldenFile('initial.png'),
-          );
+
+          expect(find.byKey(const Key('trail_tab')), findsOneWidget);
+
+          expect(find.byKey(const Key('trail_map')), findsOneWidget);
+          expect(find.byKey(const Key('background_layer')), findsOneWidget);
+
+          Finder trailButton = find.byKey(const Key('trail_button'));
+          expect(trailButton, findsOneWidget);
+
+          expect(find.byIcon(Icons.hiking), findsOneWidget);
+          await tester.tap(trailButton);
+          expect(find.byIcon(Icons.stop), findsOneWidget);
+
+          expect(find.byKey(const Key('trail_layer')), findsOneWidget);
         }
       });
     });

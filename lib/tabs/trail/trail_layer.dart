@@ -1,52 +1,54 @@
-import 'dart:math';
-
-import 'package:crumbs/globals.dart';
 import 'package:crumbs/model/location_marker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 
-class TrailLayer extends CustomPainter {
-  Trail trail;
+class TrailLayer extends StatefulWidget {
+  final List<LocationMarker> locationMarkers;
 
-  TrailLayer({required this.trail});
+  const TrailLayer({
+    Key? key,
+    required this.locationMarkers,
+  }) : super(key: key);
 
   @override
-  void paint(Canvas canvas, Size size) {
-    if (trail.value.isNotEmpty) {
-      LocationMarker startingLocation = trail.value.first;
+  State<TrailLayer> createState() => _TrailLayerState();
+}
 
-      double latOffset = (1 / milesPerLatDeg) * baseLatOffset;
-      double milesPerLonDeg =
-          cos(startingLocation.latitude * pi / 180) * milesPerLatDeg;
-      double lonOffset = (1 / milesPerLonDeg) * baseLonOffset;
-
-      double latMin = startingLocation.latitude - latOffset;
-      double latMax = startingLocation.latitude + latOffset;
-      double lonMin = startingLocation.longitude - lonOffset;
-      double lonMax = startingLocation.longitude + lonOffset;
-
-      for (int i = 0; i < trail.value.length; i++) {
-        if (i == 0 || i % 5 == 0) {
-          double pixelX = (trail.value[i].longitude - lonMin) /
-              (lonMax - lonMin) *
-              size.width;
-          double pixelY = (trail.value[i].latitude - latMin) /
-              (latMax - latMin) *
-              size.height;
-
-          Rect markerRect = Rect.fromCenter(
-            center: Offset(pixelX, pixelY),
-            width: 1,
-            height: 1,
+class _TrailLayerState extends State<TrailLayer> {
+  @override
+  Widget build(BuildContext context) {
+    return MarkerLayerWidget(
+      key: const Key('trail_layer'),
+      options: MarkerLayerOptions(
+        markers: widget.locationMarkers.map((locMarker) {
+          return Marker(
+            point: LatLng(locMarker.latitude, locMarker.longitude),
+            builder: (context) {
+              return GestureDetector(
+                onTap: () {
+                  print('tapped on marker ${widget.locationMarkers.indexOf(locMarker)}');
+                },
+                child: Container(
+                  decoration: ShapeDecoration(
+                    shape: const CircleBorder(),
+                    color: locMarker.color,
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    widget.locationMarkers.indexOf(locMarker).toString(),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 10,
+                    ),
+                  ),
+                ),
+              );
+            },
           );
-
-          Path markerPath = Path()..addArc(markerRect, 0, 2 * pi);
-
-          canvas.drawPath(markerPath, Paint()..color = Colors.white);
-        }
-      }
-    }
+        }).toList(),
+      ),
+    );
   }
-
-  @override
-  bool shouldRepaint(TrailLayer oldDelegate) => recording;
 }

@@ -1,13 +1,16 @@
-import 'package:crumbs/model/location_marker.dart';
-import 'package:crumbs/tabs/trail/trail.dart';
+import 'package:crumbs/tabs/route_tab/map_route_tab.dart';
+import 'package:crumbs/model/map_route.dart';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 void main() {
-  runApp(ChangeNotifierProvider(
-    create: (context) => Trail([]),
-    child: const App(),
-  ));
+  runApp(
+    ChangeNotifierProvider<MapRoute>(
+      create: (context) => MapRoute(),
+      child: const App(),
+    ),
+  );
 }
 
 class App extends StatelessWidget {
@@ -38,7 +41,7 @@ class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
 
   static final List<Widget> _tabs = [
-    const TrailTab(key: Key('trail_tab')),
+    const MapRouteTab(key: Key('trail_tab')),
     const SizedBox.expand(),
     const SizedBox.expand(),
   ];
@@ -52,9 +55,6 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
       body: Center(
         child: _tabs.elementAt(_selectedIndex),
       ),
@@ -63,7 +63,7 @@ class _HomePageState extends State<HomePage> {
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.hiking),
-            label: 'Trail',
+            label: 'Route',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.photo_camera),

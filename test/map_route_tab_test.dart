@@ -1,19 +1,50 @@
 import 'package:crumbs/tabs/route_tab/map_route_tab.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:geolocator/geolocator.dart';
 
 void main() {
+  Future<LocationPermission> mockRequestPermission() async {
+    return LocationPermission.whileInUse;
+  }
+
   group('route tab tests', () {
-    var mapRouteTab = const MapRouteTab();
+    testWidgets('loads map successfully', (tester) async {
+      await tester.pumpWidget(
+        FutureBuilder(
+          future: mockRequestPermission(),
+          builder: (BuildContext context, AsyncSnapshot<LocationPermission> permissionSnapshot) {
+            Widget mapWidget = const SizedBox.shrink();
 
-    testWidgets('shows spinner when loading map', (WidgetTester tester) async {
-      await tester.pumpWidget(mapRouteTab);
+            if (permissionSnapshot.hasError) {
+              mapWidget = const Text('An error occurred.');
+            } else {
+              LocationPermission? permission = permissionSnapshot.data;
 
-      expect(find.byType(CircularProgressIndicator), findsOneWidget);
-    });
+              switch (permissionSnapshot.connectionState) {
+                case ConnectionState.none:
+                  break;
+                case ConnectionState.waiting:
+                  mapWidget = const CircularProgressIndicator();
+                  break;
+                case ConnectionState.active:
+                case ConnectionState.done:
+                  if (permission == LocationPermission.whileInUse) {
+                    mapWidget = const MapRouteTab();
 
-    testWidgets('loads map', (WidgetTester tester) async {
-      // code goes here
+                    expect(find.byKey(const Key('map_layer')), findsOneWidget);
+                    expect(find.byKey(const Key('route_layer')), findsOneWidget);
+                    expect(find.byKey(const Key('record_position_button')), findsOneWidget);
+                  }
+                  break;
+              }
+            }
+
+            return mapWidget;
+          },
+        ),
+      );
     });
   });
 }

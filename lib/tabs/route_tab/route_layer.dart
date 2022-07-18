@@ -1,5 +1,4 @@
 import 'package:crumbs/model/map_route.dart';
-
 import 'package:flutter/material.dart';
 
 class RouteLayer extends CustomPainter {
@@ -9,14 +8,18 @@ class RouteLayer extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    Paint paint = Paint()
+    var routePixels = route.plotPoints(size.width, size.height);
+    Paint routePaint = Paint()
       ..color = Colors.white
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round
       ..strokeWidth = 2;
 
-    var routePixels = route.plotPoints(size.width, size.height);
-    canvas.drawPath(route.drawLineBetweenPixels(routePixels), paint);
+    if (routePixels.isNotEmpty) {
+      canvas.drawPath(route.drawLineBetweenPixels(routePixels), routePaint);
+      canvas.drawCircle(routePixels.first, 3, Paint()..color = Colors.black);
+      canvas.drawCircle(routePixels.last, 3, Paint()..color = Colors.green);
+    }
   }
 
   @override

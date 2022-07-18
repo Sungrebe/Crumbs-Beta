@@ -2,6 +2,7 @@ import 'package:crumbs/tabs/route_tab/map_route_tab.dart';
 import 'package:crumbs/model/map_route.dart';
 
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -18,12 +19,9 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       title: 'Crumbs',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const HomePage(title: 'Crumbs'),
+      home: HomePage(title: 'Crumbs'),
     );
   }
 }
@@ -56,7 +54,34 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: _tabs.elementAt(_selectedIndex),
+        child: FutureBuilder(
+          future: Geolocator.requestPermission(),
+          builder: (BuildContext context, AsyncSnapshot<LocationPermission> permissionSnapshot) {
+            Widget body = const SizedBox.shrink();
+
+            if (permissionSnapshot.hasError) {
+              body = const Text('An error occurred.');
+            } else {
+              LocationPermission? permission = permissionSnapshot.data;
+
+              switch (permissionSnapshot.connectionState) {
+                case ConnectionState.none:
+                  break;
+                case ConnectionState.waiting:
+                  body = const CircularProgressIndicator();
+                  break;
+                case ConnectionState.active:
+                case ConnectionState.done:
+                  if (permission == LocationPermission.whileInUse) {
+                    body = _tabs.elementAt(_selectedIndex);
+                  }
+                  break;
+              }
+            }
+
+            return body;
+          },
+        ),
       ),
       bottomNavigationBar: BottomNavigationBar(
         key: const Key('bottom_navigation_bar'),

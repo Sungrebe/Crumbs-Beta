@@ -25,14 +25,14 @@ class _MapRouteTabState extends State<MapRouteTab> {
             painter: MapLayer(),
           ),
           Align(
-            alignment: Alignment.lerp(Alignment.center, Alignment.topCenter, 0.8)!,
+            alignment: Alignment.lerp(Alignment.center, Alignment.topCenter, 0.05)!,
             child: Consumer<MapRoute>(
               builder: (context, currentRoute, child) {
                 return CustomPaint(
                   key: const Key('route_layer'),
                   size: Size(
                     MediaQuery.of(context).size.width * 0.95,
-                    MediaQuery.of(context).size.height * 0.77,
+                    MediaQuery.of(context).size.height * 0.7,
                   ),
                   painter: RouteLayer(route: currentRoute),
                 );
@@ -66,9 +66,11 @@ class _MapRouteTabState extends State<MapRouteTab> {
             child: Consumer<MapRoute>(
               builder: (context, currentRoute, child) {
                 return Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text('Duration: ' + currentRoute.formatTimeElapsed()),
-                    Text('Traveled ' + currentRoute.getDistanceTraveled() + ' meters'),
+                    Text('Duration: ${currentRoute.formattedRouteDuration()}'),
+                    Text('Traveled: ${currentRoute.formattedDistanceTraveled()} miles'),
                   ],
                 );
               },

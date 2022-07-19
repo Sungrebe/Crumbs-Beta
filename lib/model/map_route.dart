@@ -16,6 +16,7 @@ class MapRoute extends ChangeNotifier {
   final _stopwatch = Stopwatch();
 
   double distanceTraveled = 0;
+  Duration timeElapsed = Duration.zero;
 
   int locationReadings = 0;
   double minLatitude = double.negativeInfinity;
@@ -25,48 +26,66 @@ class MapRoute extends ChangeNotifier {
 
   int get numberOfPoints => _points.length;
 
-  String formatTimeElapsed() {
-    Duration timeElapsed = _stopwatch.elapsed;
-
-    String twoDigits(int n) => n.toString().padLeft(2, "0");
-    String twoDigitMinutes = twoDigits(timeElapsed.inMinutes.remainder(60));
-    String twoDigitSeconds = twoDigits(timeElapsed.inSeconds.remainder(60));
-    return "${twoDigits(timeElapsed.inHours)}:$twoDigitMinutes:$twoDigitSeconds";
+  void removeAll() {
+    _points.clear();
+    notifyListeners();
   }
 
-  String getDistanceTraveled() {
-    double distance = 0;
+  void updateTimeElapsed() {
+    timeElapsed = _stopwatch.elapsed;
+    notifyListeners();
+  }
 
-    if (_points.isNotEmpty) {
-      distance = Geolocator.distanceBetween(
-        _points.first.latitude,
-        _points.first.longitude,
-        _points.last.latitude,
-        _points.last.longitude,
+  void updateDistanceTraveled() {
+    if (_points.length >= 2) {
+      var lastTwoPoints = _points.sublist(_points.length - 2);
+      distanceTraveled += Geolocator.distanceBetween(
+        lastTwoPoints[0].latitude,
+        lastTwoPoints[0].longitude,
+        lastTwoPoints[1].latitude,
+        lastTwoPoints[1].longitude,
       );
     }
+  }
 
-    return distance.toStringAsFixed(1);
+  String formattedRouteDuration() {
+    var timeInHours = timeElapsed.inHours.toString().padLeft(2, '0');
+    var timeInMinutes = timeElapsed.inMinutes.remainder(60).toString().padLeft(2, '0');
+    var timeInSeconds = timeElapsed.inSeconds.remainder(60).toString().padLeft(2, '0');
+
+    return '$timeInHours:$timeInMinutes:$timeInSeconds';
+  }
+
+  String formattedDistanceTraveled() {
+    var distanceInMiles = distanceTraveled / 1609.34;
+    return distanceInMiles.toStringAsFixed(2);
   }
 
   void recordPosition() {
+    _stopwatch.start();
+    Timer.periodic(const Duration(seconds: 1), (timer) {
+      updateTimeElapsed();
+    });
+
     if (_points.isNotEmpty) {
-      _points.clear();
+      removeAll();
     }
 
-    _stopwatch.start();
     LocationSettings settings = const LocationSettings(distanceFilter: 10);
     _subscription = Geolocator.getPositionStream(locationSettings: settings).listen((Position pos) {
       locationReadings++;
-      update(RoutePoint(latitude: pos.latitude, longitude: pos.longitude));
+      updatePoints(RoutePoint(latitude: pos.latitude, longitude: pos.longitude));
+
+      updateDistanceTraveled();
     });
   }
 
   void stopRecordPosition() {
     _subscription?.cancel();
+    _stopwatch.stop();
   }
 
-  void update(RoutePoint point) {
+  void updatePoints(RoutePoint point) {
     _points.add(point);
     notifyListeners();
 

@@ -12,7 +12,12 @@ class MapRouteTab extends StatefulWidget {
 }
 
 class _MapRouteTabState extends State<MapRouteTab> {
-  bool recordPosition = false;
+  bool _recordPosition = false;
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,21 +49,21 @@ class _MapRouteTabState extends State<MapRouteTab> {
             child: ElevatedButton(
               key: const Key('record_position_button'),
               style: ElevatedButton.styleFrom(
-                primary: Colors.white,
-                onPrimary: recordPosition ? Colors.red : Colors.green,
+                foregroundColor: _recordPosition ? Colors.red : Colors.green,
+                backgroundColor: Colors.white,
               ),
               onPressed: () {
                 setState(() {
-                  if (recordPosition) {
-                    recordPosition = false;
+                  if (_recordPosition) {
+                    _recordPosition = false;
                     Provider.of<MapRoute>(context, listen: false).stopRecordPosition();
                   } else {
-                    recordPosition = true;
+                    _recordPosition = true;
                     Provider.of<MapRoute>(context, listen: false).recordPosition();
                   }
                 });
               },
-              child: Text(recordPosition ? 'Stop Recording' : 'Start Recording'),
+              child: Text(_recordPosition ? 'Stop Recording' : 'Start Recording'),
             ),
           ),
           Padding(
@@ -69,8 +74,14 @@ class _MapRouteTabState extends State<MapRouteTab> {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text('Duration: ${currentRoute.formattedRouteDuration()}'),
-                    Text('Traveled: ${currentRoute.formattedDistanceTraveled()} miles'),
+                    Text(
+                      'Duration: ${currentRoute.formattedRouteDuration()}',
+                      style: const TextStyle(color: Color.fromRGBO(251, 252, 248, 1)),
+                    ),
+                    Text(
+                      'Traveled: ${(currentRoute.distanceTraveled / 1609).toStringAsFixed(2)} miles',
+                      style: const TextStyle(color: Color.fromRGBO(248, 238, 236, 1)),
+                    ),
                   ],
                 );
               },

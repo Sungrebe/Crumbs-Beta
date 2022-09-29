@@ -1,22 +1,39 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
+import 'dart:ui' as ui;
 
+import 'package:crumbs/globals.dart';
+import 'package:crumbs/utilities/local_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 
 class RoutePoint {
   double latitude;
   double longitude;
+  bool hasPhoto = false;
 
   RoutePoint({required this.latitude, required this.longitude});
+
+  Map<String, dynamic> toMap() {
+    return {
+      'latitude': latitude,
+      'longitude': longitude,
+    };
+  }
 }
 
 class MapRoute extends ChangeNotifier {
   final List<RoutePoint> _points = [];
   StreamSubscription<Position>? _subscription;
   final _stopwatch = Stopwatch();
+  final _localStorage = LocalStorage();
 
   double distanceTraveled = 0;
   Duration timeElapsed = Duration.zero;
+  DateTime? startTime;
+  DateTime? endTime;
 
   int locationReadings = 0;
   double minLatitude = double.negativeInfinity;
@@ -24,7 +41,12 @@ class MapRoute extends ChangeNotifier {
   double minLongitude = double.negativeInfinity;
   double maxLongitude = double.infinity;
 
+  final List<ui.Image> _listOfPhotos = [];
+  final List<Uint8List> _photoData = [];
+
   int get numberOfPoints => _points.length;
+  RoutePoint get lastPoint => _points.last;
+  List<ui.Image> get listOfPhotos => _listOfPhotos;
 
   void removeAll() {
     _points.clear();
@@ -38,12 +60,13 @@ class MapRoute extends ChangeNotifier {
 
   void updateDistanceTraveled() {
     if (_points.length >= 2) {
-      var lastTwoPoints = _points.sublist(_points.length - 2);
+      var lastPoint = _points.last;
+      var secondToLastPoint = _points[_points.indexOf(lastPoint) - 1];
       distanceTraveled += Geolocator.distanceBetween(
-        lastTwoPoints[0].latitude,
-        lastTwoPoints[0].longitude,
-        lastTwoPoints[1].latitude,
-        lastTwoPoints[1].longitude,
+        lastPoint.latitude,
+        lastPoint.longitude,
+        secondToLastPoint.latitude,
+        secondToLastPoint.longitude,
       );
     }
   }
@@ -56,13 +79,13 @@ class MapRoute extends ChangeNotifier {
     return '$timeInHours:$timeInMinutes:$timeInSeconds';
   }
 
-  String formattedDistanceTraveled() {
-    var distanceInMiles = distanceTraveled / 1609.34;
-    return distanceInMiles.toStringAsFixed(2);
-  }
-
   void recordPosition() {
+    distanceTraveled = 0;
+    _stopwatch.reset();
     _stopwatch.start();
+
+    startTime = DateTime.now();
+
     Timer.periodic(const Duration(seconds: 1), (timer) {
       updateTimeElapsed();
     });
@@ -83,6 +106,9 @@ class MapRoute extends ChangeNotifier {
   void stopRecordPosition() {
     _subscription?.cancel();
     _stopwatch.stop();
+    endTime = DateTime.now();
+
+    saveRoute();
   }
 
   void updatePoints(RoutePoint point) {
@@ -136,5 +162,48 @@ class MapRoute extends ChangeNotifier {
     }
 
     return routePath;
+  }
+
+  Map<String, dynamic> toMap() {
+    var savedPointsList = [];
+
+    for (var point in _points) {
+      savedPointsList.add(point.toMap());
+    }
+
+    return {
+      'title': 'Untitled Route',
+      'points': savedPointsList,
+      'startTime': startTime!.toLocal().toIso8601String(),
+      'endTime': endTime!.toLocal().toIso8601String(),
+      'distance': distanceTraveled,
+      'photos': _photoData,
+    };
+  }
+
+  void saveRoute() async {
+    var routeDir = Directory(await localStorage.documentsDirectory + '/routes/');
+
+    File routeFile;
+    if (await routeDir.exists()) {
+      var files = await _localStorage.getAllRouteFiles();
+      routeFile = await _localStorage.createFile('Untitled Route ${files.length + 1}');
+    } else {
+      routeFile = await _localStorage.createFile('Untitled Route');
+    }
+
+    _localStorage.writeContent(json.encode(toMap()), routeFile);
+  }
+
+  void addPhoto(File photoFile) async {
+    var byteData = await photoFile.readAsBytes();
+    var imageData = await decodeImageFromList(byteData);
+    _listOfPhotos.add(imageData);
+    _points.last.hasPhoto = true;
+    notifyListeners();
+
+    ByteData? bytes = await imageData.toByteData(format: ui.ImageByteFormat.png);
+    Uint8List data = bytes!.buffer.asUint8List();
+    _photoData.add(data);
   }
 }

@@ -18,7 +18,15 @@ class RouteLayer extends CustomPainter {
     if (routePixels.isNotEmpty) {
       canvas.drawPath(route.drawLineBetweenPixels(routePixels), routePaint);
       canvas.drawCircle(routePixels.first, 3, Paint()..color = Colors.black);
-      canvas.drawCircle(routePixels.last, 3, Paint()..color = Colors.green);
+      canvas.drawCircle(routePixels.last, 3, Paint()..color = Colors.red);
+
+      if (route.lastPoint.hasPhoto) {
+        paintImage(
+          canvas: canvas,
+          rect: Rect.fromCircle(center: routePixels.last, radius: 10),
+          image: route.listOfPhotos.last,
+        );
+      }
     }
   }
 

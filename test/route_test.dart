@@ -1,20 +1,13 @@
 import 'dart:async';
 
 import 'package:crumbs/model/map_route.dart';
-
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('Route tests', () {
     MapRoute exampleRoute = MapRoute();
-    RoutePoint examplePoint1 = RoutePoint(
-      latitude: 37.432483,
-      longitude: -122.091763,
-    );
-    RoutePoint examplePoint2 = RoutePoint(
-      latitude: 37.43251,
-      longitude: -122.09173,
-    );
+    RoutePoint examplePoint1 = RoutePoint(latitude: 37.432483, longitude: -122.091763);
+    RoutePoint examplePoint2 = RoutePoint(latitude: 37.43251, longitude: -122.09173);
 
     double mapWidth = 600;
     double mapHeight = 800;

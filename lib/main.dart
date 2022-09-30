@@ -1,18 +1,23 @@
-import 'dart:io';
-
+import 'package:crumbs/model/route_point.dart';
 import 'package:crumbs/tabs/camera_tab/camera_tab.dart';
-import 'package:crumbs/tabs/saved_tab/saved_tab.dart';
 import 'package:crumbs/tabs/route_tab/route_tab.dart';
 import 'package:crumbs/model/map_route.dart';
+import 'package:crumbs/tabs/saved_tab/saved_tab.dart';
+
 import 'package:camera/camera.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Hive.initFlutter();
+  Hive.registerAdapter(RoutePointAdapter());
+  Hive.registerAdapter(MapRouteAdapter());
+
+  await Hive.openBox('mapRoutes');
 
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]).then((_) {
     runApp(
@@ -68,13 +73,7 @@ class _HomePageState extends State<HomePage> {
         }
       },
     ),
-    /*ValueListenableBuilder(
-      valueListenable: routeFilesListener,
-      builder: (context, Future<List<File>> value, child) {
-        print('rebuilding list of saved routes');
-        return SavedTab(fileList: value);
-      },
-    ),*/
+    const SavedTab(),
   ];
 
   @override

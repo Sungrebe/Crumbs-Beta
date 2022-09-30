@@ -1,39 +1,42 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
-//import 'package:crumbs/globals.dart';
-//import 'package:crumbs/utilities/local_storage.dart';
+import 'package:crumbs/globals.dart';
+import 'package:crumbs/model/route_point.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
-class RoutePoint {
-  double latitude;
-  double longitude;
-  bool hasPhoto = false;
+part 'map_route.g.dart';
 
-  RoutePoint({required this.latitude, required this.longitude});
-
-  Map<String, dynamic> toMap() {
-    return {
-      'latitude': latitude,
-      'longitude': longitude,
-    };
-  }
-}
-
+@HiveType(typeId: 2)
 class MapRoute extends ChangeNotifier {
-  final List<RoutePoint> _points = [];
+  @HiveField(0)
+  String name = 'Untitled Route';
+
+  @HiveField(1)
+  List<RoutePoint>? points = [];
+
+  @HiveField(2)
+  DateTime? startTime;
+
+  @HiveField(3)
+  DateTime? endTime;
+
+  @HiveField(4)
+  double distanceTraveled = 0;
+
+  @HiveField(5)
+  List<Uint8List>? photoData = [];
+
+  MapRoute({this.points});
+
   StreamSubscription<Position>? _subscription;
   final _stopwatch = Stopwatch();
-  //final _localStorage = LocalStorage();
 
-  double distanceTraveled = 0;
   Duration timeElapsed = Duration.zero;
-  DateTime? startTime;
-  DateTime? endTime;
 
   int locationReadings = 0;
   double minLatitude = double.negativeInfinity;
@@ -42,15 +45,13 @@ class MapRoute extends ChangeNotifier {
   double maxLongitude = double.infinity;
 
   final List<ui.Image> _listOfPhotos = [];
-  final List<Uint8List> _photoData = [];
 
-  int get numberOfPoints => _points.length;
-  RoutePoint get lastPoint => _points.last;
-  List<RoutePoint> get points => _points;
+  int get numberOfPoints => points!.length;
+  RoutePoint get lastPoint => points!.last;
   List<ui.Image> get listOfPhotos => _listOfPhotos;
 
   void removeAll() {
-    _points.clear();
+    points!.clear();
     notifyListeners();
   }
 
@@ -60,9 +61,9 @@ class MapRoute extends ChangeNotifier {
   }
 
   void updateDistanceTraveled() {
-    if (_points.length >= 2) {
-      var lastPoint = _points.last;
-      var secondToLastPoint = _points[_points.indexOf(lastPoint) - 1];
+    if (points!.length >= 2) {
+      var lastPoint = points!.last;
+      var secondToLastPoint = points![points!.indexOf(lastPoint) - 1];
       distanceTraveled += Geolocator.distanceBetween(
         lastPoint.latitude,
         lastPoint.longitude,
@@ -91,7 +92,7 @@ class MapRoute extends ChangeNotifier {
       updateTimeElapsed();
     });
 
-    if (_points.isNotEmpty) {
+    if (points!.isNotEmpty) {
       removeAll();
     }
 
@@ -108,17 +109,15 @@ class MapRoute extends ChangeNotifier {
     _subscription?.cancel();
     _stopwatch.stop();
     endTime = DateTime.now();
-
-    //saveRoute();
   }
 
   void updatePoints(RoutePoint point) {
-    _points.add(point);
+    points!.add(point);
     notifyListeners();
 
     double quarterMileOffset = 0.0036231884;
-    var lastPoint = _points.last;
-    if (_points.length == 1) {
+    var lastPoint = points!.last;
+    if (points!.length == 1) {
       minLatitude = (lastPoint.latitude - quarterMileOffset);
       maxLatitude = (lastPoint.latitude + quarterMileOffset);
       minLongitude = (lastPoint.longitude - quarterMileOffset);
@@ -165,46 +164,19 @@ class MapRoute extends ChangeNotifier {
     return routePath;
   }
 
-  Map<String, dynamic> toMap() {
-    var savedPointsList = [];
-
-    for (var point in _points) {
-      savedPointsList.add(point.toMap());
-    }
-
-    return {
-      'title': 'Untitled Route',
-      'points': savedPointsList,
-      'startTime': startTime!.toLocal().toIso8601String(),
-      'endTime': endTime!.toLocal().toIso8601String(),
-      'distance': distanceTraveled,
-      'photos': _photoData,
-    };
-  }
-
-  /*void saveRoute() async {
-    var routeDir = Directory(await localStorage.documentsDirectory + '/routes/');
-
-    File routeFile;
-    if (await routeDir.exists()) {
-      var files = await _localStorage.getAllRouteFiles();
-      routeFile = await _localStorage.createFile('Untitled Route ${files.length + 1}');
-    } else {
-      routeFile = await _localStorage.createFile('Untitled Route');
-    }
-
-    _localStorage.writeContent(json.encode(toMap()), routeFile);
-  }*/
-
   void addPhoto(File photoFile) async {
     var byteData = await photoFile.readAsBytes();
     var imageData = await decodeImageFromList(byteData);
     _listOfPhotos.add(imageData);
-    _points.last.hasPhoto = true;
+    points!.last.hasPhoto = true;
     notifyListeners();
 
     ByteData? bytes = await imageData.toByteData(format: ui.ImageByteFormat.png);
     Uint8List data = bytes!.buffer.asUint8List();
-    _photoData.add(data);
+    photoData!.add(data);
+  }
+
+  void saveData() {
+    box.add(this);
   }
 }

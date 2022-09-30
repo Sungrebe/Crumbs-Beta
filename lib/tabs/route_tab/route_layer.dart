@@ -8,7 +8,7 @@ class RouteLayer extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    var routePixels = route.plotPoints(size.width, size.height, route.points);
+    var routePixels = route.plotPoints(size.width, size.height, route.points!);
     Paint routePaint = Paint()
       ..color = Colors.white
       ..style = PaintingStyle.stroke
@@ -20,7 +20,7 @@ class RouteLayer extends CustomPainter {
       canvas.drawCircle(routePixels.first, 3, Paint()..color = Colors.black);
       canvas.drawCircle(routePixels.last, 3, Paint()..color = Colors.red);
 
-      var imagePoints = route.points.where((point) => point.hasPhoto).toList();
+      var imagePoints = route.points!.where((point) => point.hasPhoto).toList();
       var imagePixels = route.plotPoints(size.width, size.height, imagePoints);
 
       for (int i = 0; i < imagePoints.length; i++) {

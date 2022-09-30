@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:ui';
 
+import 'package:crumbs/model/route_point.dart';
 import 'package:crumbs/model/map_route.dart';
 import 'package:flutter_test/flutter_test.dart';
 

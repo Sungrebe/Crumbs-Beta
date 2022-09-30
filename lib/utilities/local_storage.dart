@@ -35,6 +35,7 @@ class LocalStorage extends ChangeNotifier {
   Future<List<File>> getAllRouteFiles() async {
     final documentsDir = await documentsDirectory;
     List<FileSystemEntity> entities = await Directory(documentsDir + '/routes/').list().toList();
+    //Directory(documentsDir + '/routes/').delete(recursive: true);
 
     var statResults = await Future.wait([
       for (var entity in entities) FileStat.stat(entity.path),

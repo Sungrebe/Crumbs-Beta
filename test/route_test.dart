@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:crumbs/model/map_route.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -12,6 +13,7 @@ void main() {
     double mapWidth = 600;
     double mapHeight = 800;
 
+    List<RoutePoint> testPointList = [examplePoint1, examplePoint2];
     List<Offset> examplePixelList = [];
 
     test('updateTimeElapsed', () {
@@ -64,7 +66,7 @@ void main() {
 
     test('plotRoute', () {
       exampleRoute.updatePoints(examplePoint1);
-      examplePixelList = exampleRoute.plotPoints(mapWidth, mapHeight);
+      examplePixelList = exampleRoute.plotPoints(mapWidth, mapHeight, testPointList);
 
       expect(examplePixelList.first.dx, equals(mapWidth / 2));
       expect(examplePixelList.first.dy, equals(mapHeight / 2));
@@ -73,7 +75,7 @@ void main() {
     test('drawLineBetweenPixels', () {
       exampleRoute.updatePoints(examplePoint1);
       exampleRoute.updatePoints(examplePoint2);
-      examplePixelList = exampleRoute.plotPoints(mapWidth, mapHeight);
+      examplePixelList = exampleRoute.plotPoints(mapWidth, mapHeight, testPointList);
 
       var exampleRoutePath = exampleRoute.drawLineBetweenPixels(examplePixelList);
       expect(exampleRoutePath.contains(examplePixelList[1]), equals(true));

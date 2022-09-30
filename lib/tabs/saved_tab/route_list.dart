@@ -28,6 +28,7 @@ class _RouteListState extends State<RouteList> {
 
             if (snapshot.hasData) {
               var fileJson = jsonDecode(snapshot.data!);
+              print(fileJson);
 
               Uint8List firstPhotoData = Uint8List(0);
               if (fileJson['photos'].isNotEmpty) {

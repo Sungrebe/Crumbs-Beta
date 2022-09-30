@@ -46,6 +46,7 @@ class MapRoute extends ChangeNotifier {
 
   int get numberOfPoints => _points.length;
   RoutePoint get lastPoint => _points.last;
+  List<RoutePoint> get points => _points;
   List<ui.Image> get listOfPhotos => _listOfPhotos;
 
   void removeAll() {
@@ -139,10 +140,10 @@ class MapRoute extends ChangeNotifier {
     }
   }
 
-  List<Offset> plotPoints(double mapWidth, double mapHeight) {
+  List<Offset> plotPoints(double mapWidth, double mapHeight, List<RoutePoint> pointList) {
     List<Offset> pixels = [];
 
-    for (var point in _points) {
+    for (var point in pointList) {
       var pixelX = (minLatitude - point.latitude) / (minLatitude - maxLatitude) * mapWidth;
       var pixelY = (maxLongitude - point.longitude) / (maxLongitude - minLongitude) * mapHeight;
 

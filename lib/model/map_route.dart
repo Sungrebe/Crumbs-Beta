@@ -4,8 +4,8 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
-import 'package:crumbs/globals.dart';
-import 'package:crumbs/utilities/local_storage.dart';
+//import 'package:crumbs/globals.dart';
+//import 'package:crumbs/utilities/local_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 
@@ -28,7 +28,7 @@ class MapRoute extends ChangeNotifier {
   final List<RoutePoint> _points = [];
   StreamSubscription<Position>? _subscription;
   final _stopwatch = Stopwatch();
-  final _localStorage = LocalStorage();
+  //final _localStorage = LocalStorage();
 
   double distanceTraveled = 0;
   Duration timeElapsed = Duration.zero;
@@ -109,7 +109,7 @@ class MapRoute extends ChangeNotifier {
     _stopwatch.stop();
     endTime = DateTime.now();
 
-    saveRoute();
+    //saveRoute();
   }
 
   void updatePoints(RoutePoint point) {
@@ -182,7 +182,7 @@ class MapRoute extends ChangeNotifier {
     };
   }
 
-  void saveRoute() async {
+  /*void saveRoute() async {
     var routeDir = Directory(await localStorage.documentsDirectory + '/routes/');
 
     File routeFile;
@@ -194,7 +194,7 @@ class MapRoute extends ChangeNotifier {
     }
 
     _localStorage.writeContent(json.encode(toMap()), routeFile);
-  }
+  }*/
 
   void addPhoto(File photoFile) async {
     var byteData = await photoFile.readAsBytes();

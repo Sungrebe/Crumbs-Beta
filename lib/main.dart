@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:crumbs/globals.dart';
 import 'package:crumbs/tabs/camera_tab/camera_tab.dart';
 import 'package:crumbs/tabs/saved_tab/saved_tab.dart';
 import 'package:crumbs/tabs/route_tab/route_tab.dart';
@@ -69,13 +68,13 @@ class _HomePageState extends State<HomePage> {
         }
       },
     ),
-    ValueListenableBuilder(
+    /*ValueListenableBuilder(
       valueListenable: routeFilesListener,
       builder: (context, Future<List<File>> value, child) {
         print('rebuilding list of saved routes');
         return SavedTab(fileList: value);
       },
-    ),
+    ),*/
   ];
 
   @override

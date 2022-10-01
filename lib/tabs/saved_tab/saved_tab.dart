@@ -48,12 +48,12 @@ class _SavedTabState extends State<SavedTab> {
                                   style: const TextStyle(fontWeight: FontWeight.bold),
                                 ),
                                 TextSpan(
-                                  text: DateFormat('hh:mm a').format(routeData.startTime),
+                                  text: DateFormat('h:mm a').format(routeData.startTime),
                                   style: const TextStyle(fontStyle: FontStyle.italic),
                                 ),
                                 const TextSpan(text: ' - '),
                                 TextSpan(
-                                  text: DateFormat('hh:mm a').format(routeData.endTime),
+                                  text: DateFormat('h:mm a').format(routeData.endTime),
                                   style: const TextStyle(fontStyle: FontStyle.italic),
                                 ),
                               ],

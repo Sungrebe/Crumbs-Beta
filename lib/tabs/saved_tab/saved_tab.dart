@@ -13,49 +13,63 @@ class SavedTab extends StatefulWidget {
 class _SavedTabState extends State<SavedTab> {
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder(
-      valueListenable: box.listenable(),
-      builder: (context, Box currentBox, child) {
-        if (currentBox.isEmpty) {
-          return const Center(
-            child: Text('You haven\'t created any routes yet.'),
-          );
-        } else {
-          return ListView.builder(
-            itemCount: currentBox.length,
-            itemBuilder: (context, index) {
-              var routeData = currentBox.getAt(index);
+    return SafeArea(
+      child: ValueListenableBuilder(
+        valueListenable: box.listenable(),
+        builder: (context, Box currentBox, child) {
+          if (currentBox.isEmpty) {
+            return const Center(
+              child: Text('You haven\'t created any routes yet.'),
+            );
+          } else {
+            return Column(
+              children: [
+                const Text('Saved Routes', style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold)),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(8, 20, 8, 20),
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: currentBox.length,
+                    itemBuilder: (context, index) {
+                      var routeData = currentBox.getAt(index);
 
-              return Card(
-                child: ListTile(
-                  title: Text(routeData.name),
-                  subtitle: RichText(
-                    text: TextSpan(
-                      style: const TextStyle(fontFamily: 'Montserrat'),
-                      children: [
-                        TextSpan(
-                          text: DateFormat('EEE, M/d/y ').format(routeData.startTime),
-                          style: const TextStyle(fontWeight: FontWeight.bold),
+                      return Card(
+                        child: ListTile(
+                          title: Text(routeData.name),
+                          subtitle: RichText(
+                            text: TextSpan(
+                              style: const TextStyle(
+                                fontFamily: 'Montserrat',
+                                color: Colors.black,
+                              ),
+                              children: [
+                                TextSpan(
+                                  text: DateFormat('EEE, M/d/y ').format(routeData.startTime),
+                                  style: const TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                                TextSpan(
+                                  text: DateFormat('hh:mm a').format(routeData.startTime),
+                                  style: const TextStyle(fontStyle: FontStyle.italic),
+                                ),
+                                const TextSpan(text: ' - '),
+                                TextSpan(
+                                  text: DateFormat('hh:mm a').format(routeData.endTime),
+                                  style: const TextStyle(fontStyle: FontStyle.italic),
+                                ),
+                              ],
+                            ),
+                          ),
+                          trailing: Image.memory(routeData.photoData.first),
                         ),
-                        TextSpan(
-                          text: DateFormat('hh:mm a').format(routeData.startTime),
-                          style: const TextStyle(fontStyle: FontStyle.italic),
-                        ),
-                        const TextSpan(text: ' - '),
-                        TextSpan(
-                          text: DateFormat('hh:mm a').format(routeData.endTime),
-                          style: const TextStyle(fontStyle: FontStyle.italic),
-                        ),
-                      ],
-                    ),
+                      );
+                    },
                   ),
-                  trailing: Image.memory(routeData.photoData.first),
                 ),
-              );
-            },
-          );
-        }
-      },
+              ],
+            );
+          }
+        },
+      ),
     );
   }
 }

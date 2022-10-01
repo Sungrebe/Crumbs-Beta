@@ -14,25 +14,26 @@ part 'map_route.g.dart';
 @HiveType(typeId: 2)
 class MapRoute extends ChangeNotifier {
   @HiveField(0)
-  String name = 'Untitled Route';
+  List<RoutePoint>? listOfPoints = [];
 
   @HiveField(1)
-  List<RoutePoint>? points = [];
-
-  @HiveField(2)
   DateTime? startTime;
 
-  @HiveField(3)
+  @HiveField(2)
   DateTime? endTime;
 
-  @HiveField(4)
+  @HiveField(3)
   double distanceTraveled = 0;
 
-  @HiveField(5)
-  List<Uint8List>? photoData = [];
+  @HiveField(4)
+  List<Uint8List> photoData = [];
 
-  MapRoute({this.points});
+  @HiveField(5, defaultValue: 'Untitled Route')
+  String name = 'Untitled Route';
 
+  MapRoute({this.listOfPoints});
+
+  List<RoutePoint> _points = [];
   StreamSubscription<Position>? _subscription;
   final _stopwatch = Stopwatch();
 
@@ -46,12 +47,13 @@ class MapRoute extends ChangeNotifier {
 
   final List<ui.Image> _listOfPhotos = [];
 
-  int get numberOfPoints => points!.length;
-  RoutePoint get lastPoint => points!.last;
+  int get numberOfPoints => _points.length;
+  RoutePoint get lastPoint => _points.last;
+  List<RoutePoint> get points => _points;
   List<ui.Image> get listOfPhotos => _listOfPhotos;
 
   void removeAll() {
-    points!.clear();
+    _points.clear();
     notifyListeners();
   }
 
@@ -61,9 +63,9 @@ class MapRoute extends ChangeNotifier {
   }
 
   void updateDistanceTraveled() {
-    if (points!.length >= 2) {
-      var lastPoint = points!.last;
-      var secondToLastPoint = points![points!.indexOf(lastPoint) - 1];
+    if (_points.length >= 2) {
+      var lastPoint = _points.last;
+      var secondToLastPoint = _points[_points.indexOf(lastPoint) - 1];
       distanceTraveled += Geolocator.distanceBetween(
         lastPoint.latitude,
         lastPoint.longitude,
@@ -84,6 +86,8 @@ class MapRoute extends ChangeNotifier {
   void recordPosition() {
     distanceTraveled = 0;
     _stopwatch.reset();
+    print("initial listOfPhotos $_listOfPhotos");
+
     _stopwatch.start();
 
     startTime = DateTime.now();
@@ -92,32 +96,39 @@ class MapRoute extends ChangeNotifier {
       updateTimeElapsed();
     });
 
-    if (points!.isNotEmpty) {
+    if (_points.isNotEmpty) {
       removeAll();
+      _listOfPhotos.clear();
     }
 
-    LocationSettings settings = const LocationSettings(distanceFilter: 10);
-    _subscription = Geolocator.getPositionStream(locationSettings: settings).listen((Position pos) {
-      locationReadings++;
-      updatePoints(RoutePoint(latitude: pos.latitude, longitude: pos.longitude));
+    if (listOfPoints == null) {
+      LocationSettings settings = const LocationSettings(distanceFilter: 10);
+      _subscription = Geolocator.getPositionStream(locationSettings: settings).listen((Position pos) {
+        locationReadings++;
+        updatePoints(RoutePoint(latitude: pos.latitude, longitude: pos.longitude));
 
-      updateDistanceTraveled();
-    });
+        updateDistanceTraveled();
+      });
+    } else {
+      _points = listOfPoints!;
+    }
   }
 
   void stopRecordPosition() {
     _subscription?.cancel();
     _stopwatch.stop();
     endTime = DateTime.now();
+
+    saveData();
   }
 
   void updatePoints(RoutePoint point) {
-    points!.add(point);
+    _points.add(point);
     notifyListeners();
 
     double quarterMileOffset = 0.0036231884;
-    var lastPoint = points!.last;
-    if (points!.length == 1) {
+    var lastPoint = _points.last;
+    if (_points.length == 1) {
       minLatitude = (lastPoint.latitude - quarterMileOffset);
       maxLatitude = (lastPoint.latitude + quarterMileOffset);
       minLongitude = (lastPoint.longitude - quarterMileOffset);
@@ -168,12 +179,13 @@ class MapRoute extends ChangeNotifier {
     var byteData = await photoFile.readAsBytes();
     var imageData = await decodeImageFromList(byteData);
     _listOfPhotos.add(imageData);
-    points!.last.hasPhoto = true;
+    _points.last.hasPhoto = true;
     notifyListeners();
 
     ByteData? bytes = await imageData.toByteData(format: ui.ImageByteFormat.png);
     Uint8List data = bytes!.buffer.asUint8List();
-    photoData!.add(data);
+    photoData.add(data);
+    print("added to listOfPhotos");
   }
 
   void saveData() {

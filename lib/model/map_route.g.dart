@@ -17,13 +17,13 @@ class MapRouteAdapter extends TypeAdapter<MapRoute> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return MapRoute(
-      points: (fields[1] as List?)?.cast<RoutePoint>(),
+      listOfPoints: (fields[0] as List?)?.cast<RoutePoint>(),
     )
-      ..name = fields[0] as String
-      ..startTime = fields[2] as DateTime?
-      ..endTime = fields[3] as DateTime?
-      ..distanceTraveled = fields[4] as double
-      ..photoData = (fields[5] as List?)?.cast<Uint8List>();
+      ..startTime = fields[1] as DateTime?
+      ..endTime = fields[2] as DateTime?
+      ..distanceTraveled = fields[3] as double
+      ..photoData = (fields[4] as List).cast<Uint8List>()
+      ..name = fields[5] == null ? 'Untitled Route' : fields[5] as String;
   }
 
   @override
@@ -31,17 +31,17 @@ class MapRouteAdapter extends TypeAdapter<MapRoute> {
     writer
       ..writeByte(6)
       ..writeByte(0)
-      ..write(obj.name)
+      ..write(obj.listOfPoints)
       ..writeByte(1)
-      ..write(obj.points)
-      ..writeByte(2)
       ..write(obj.startTime)
-      ..writeByte(3)
+      ..writeByte(2)
       ..write(obj.endTime)
-      ..writeByte(4)
+      ..writeByte(3)
       ..write(obj.distanceTraveled)
+      ..writeByte(4)
+      ..write(obj.photoData)
       ..writeByte(5)
-      ..write(obj.photoData);
+      ..write(obj.name);
   }
 
   @override

@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:ui' as ui;
 
 import 'package:camera/camera.dart';
 import 'package:crumbs/model/map_route.dart';
@@ -74,7 +73,7 @@ class RouteCameraState extends State<RouteCamera> {
             child: ElevatedButton(
               key: const Key('switch_camera_button'),
               style: ElevatedButton.styleFrom(
-                primary: Colors.black54,
+                backgroundColor: Colors.black54,
                 padding: const EdgeInsets.all(16),
                 shape: const CircleBorder(),
               ),

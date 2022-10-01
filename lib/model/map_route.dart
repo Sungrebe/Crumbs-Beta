@@ -184,7 +184,6 @@ class MapRoute extends ChangeNotifier {
     ByteData? bytes = await imageData.toByteData(format: ui.ImageByteFormat.png);
     Uint8List data = bytes!.buffer.asUint8List();
     photoData.add(data);
-    print("added to listOfPhotos");
   }
 
   void saveRoute() {

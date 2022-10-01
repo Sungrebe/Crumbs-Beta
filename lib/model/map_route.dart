@@ -3,7 +3,6 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
-import 'package:crumbs/globals.dart';
 import 'package:crumbs/model/route_point.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
@@ -119,7 +118,7 @@ class MapRoute extends ChangeNotifier {
     _stopwatch.stop();
     endTime = DateTime.now();
 
-    saveData();
+    saveRoute();
   }
 
   void updatePoints(RoutePoint point) {
@@ -188,7 +187,7 @@ class MapRoute extends ChangeNotifier {
     print("added to listOfPhotos");
   }
 
-  void saveData() {
-    box.add(this);
+  void saveRoute() {
+    Hive.box('mapRoutes').add(this);
   }
 }

@@ -3,9 +3,21 @@ import 'dart:async';
 import 'package:crumbs/model/route_point.dart';
 import 'package:crumbs/model/map_route.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 
+import 'route_test.mocks.dart';
+
+@GenerateMocks([Box, HiveInterface])
 void main() {
+  setUp(() async {
+    var mockHiveInterface = MockHiveInterface();
+    mockHiveInterface.registerAdapter(RoutePointAdapter());
+    mockHiveInterface.registerAdapter(MapRouteAdapter());
+    when(mockHiveInterface.openBox('mapRoutes')).thenAnswer((_) async => MockBox());
+  });
+
   group('Route tests', () {
     MapRoute exampleRoute = MapRoute();
     RoutePoint examplePoint1 = RoutePoint(latitude: 37.432483, longitude: -122.091763);
@@ -80,6 +92,12 @@ void main() {
 
       var exampleRoutePath = exampleRoute.drawLineBetweenPixels(examplePixelList);
       expect(exampleRoutePath.contains(examplePixelList[1]), equals(true));
+    });
+
+    test('saveRoute', () async {
+      var mockBox = MockBox();
+      when(mockBox.add(exampleRoute)).thenAnswer((_) async => 0);
+      when(mockBox.getAt(0)).thenAnswer((_) => exampleRoute);
     });
   });
 }

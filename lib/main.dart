@@ -73,7 +73,7 @@ class _HomePageState extends State<HomePage> {
         }
       },
     ),
-    const SavedTab(),
+    SavedTab(box: Hive.box('mapRoutes')),
   ];
 
   @override

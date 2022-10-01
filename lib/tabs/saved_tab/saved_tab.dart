@@ -1,10 +1,10 @@
-import 'package:crumbs/globals.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
 
 class SavedTab extends StatefulWidget {
-  const SavedTab({Key? key}) : super(key: key);
+  final Box box;
+  const SavedTab({Key? key, required this.box}) : super(key: key);
 
   @override
   State<SavedTab> createState() => _SavedTabState();
@@ -15,7 +15,7 @@ class _SavedTabState extends State<SavedTab> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: ValueListenableBuilder(
-        valueListenable: box.listenable(),
+        valueListenable: widget.box.listenable(),
         builder: (context, Box currentBox, child) {
           if (currentBox.isEmpty) {
             return const Center(

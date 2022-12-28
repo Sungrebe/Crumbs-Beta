@@ -1,6 +1,7 @@
 name: flutter_tests
 
 on:
+  workflow_dispatch:
   push:
     branches: [main, add_test_flow]
 
@@ -16,7 +17,7 @@ jobs:
         with:
           flutter-version: '3.3.10'
       - name: Restore packages
-          run: flutter pub get
+        run: flutter pub get
       - name: Run tests
-          run: flutter test --coverage
+        run: flutter test --coverage
       

@@ -3,7 +3,7 @@ name: flutter_tests
 on:
   workflow_dispatch:
   push:
-    branches: [main, add_test_flow]
+    branches: [main]
 
 jobs:
   tests:

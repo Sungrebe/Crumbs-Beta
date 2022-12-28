@@ -10,7 +10,8 @@ class RoutePoint {
   @HiveField(1)
   double longitude;
 
+  @HiveField(2)
   bool hasPhoto = false;
 
-  RoutePoint({required this.latitude, required this.longitude});
+  RoutePoint({required this.latitude, required this.longitude, required this.hasPhoto});
 }

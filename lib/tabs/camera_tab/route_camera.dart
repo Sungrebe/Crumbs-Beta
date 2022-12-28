@@ -39,7 +39,7 @@ class RouteCameraState extends State<RouteCamera> {
   }
 
   void _takePicture() {
-    if (Provider.of<MapRoute>(context, listen: false).numberOfPoints != 0) {
+    if (Provider.of<MapRoute>(context, listen: false).points.isNotEmpty) {
       widget.controller.takePicture().then((pictureFile) {
         setState(() {
           var photo = File(pictureFile.path);

@@ -16,13 +16,12 @@ class MapRouteAdapter extends TypeAdapter<MapRoute> {
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return MapRoute(
-      listOfPoints: (fields[0] as List?)?.cast<RoutePoint>(),
-    )
+    return MapRoute()
+      ..listOfPoints = (fields[0] as List?)?.cast<RoutePoint>()
       ..startTime = fields[1] as DateTime?
       ..endTime = fields[2] as DateTime?
       ..distanceTraveled = fields[3] as double
-      ..photoData = (fields[4] as List).cast<Uint8List>()
+      ..imageDataList = (fields[4] as List).cast<String>()
       ..name = fields[5] == null ? 'Untitled Route' : fields[5] as String;
   }
 
@@ -39,7 +38,7 @@ class MapRouteAdapter extends TypeAdapter<MapRoute> {
       ..writeByte(3)
       ..write(obj.distanceTraveled)
       ..writeByte(4)
-      ..write(obj.photoData)
+      ..write(obj.imageDataList)
       ..writeByte(5)
       ..write(obj.name);
   }

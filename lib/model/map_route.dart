@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:crumbs/model/route_point.dart';
@@ -25,31 +24,27 @@ class MapRoute extends ChangeNotifier {
   double distanceTraveled = 0;
 
   @HiveField(4)
-  List<Uint8List> photoData = [];
+  List<String> imageDataList = [];
 
   @HiveField(5, defaultValue: 'Untitled Route')
-  String name = 'Untitled Route';
+  String name = '';
 
-  MapRoute({this.listOfPoints});
-
-  List<RoutePoint> _points = [];
+  final List<RoutePoint> _points = [];
+  final List<ui.Image> _mapImages = [];
   StreamSubscription<Position>? _subscription;
   final _stopwatch = Stopwatch();
 
   Duration timeElapsed = Duration.zero;
 
-  int locationReadings = 0;
   double minLatitude = double.negativeInfinity;
   double maxLatitude = double.infinity;
   double minLongitude = double.negativeInfinity;
   double maxLongitude = double.infinity;
 
-  final List<ui.Image> _listOfPhotos = [];
-
   int get numberOfPoints => _points.length;
   RoutePoint get lastPoint => _points.last;
   List<RoutePoint> get points => _points;
-  List<ui.Image> get listOfPhotos => _listOfPhotos;
+  List<ui.Image> get mapImages => _mapImages;
 
   void removeAll() {
     _points.clear();
@@ -83,42 +78,34 @@ class MapRoute extends ChangeNotifier {
   }
 
   void recordPosition() {
+    imageDataList.clear();
     distanceTraveled = 0;
+    startTime = null;
+    endTime = null;
     _stopwatch.reset();
-    print("initial listOfPhotos $_listOfPhotos");
 
     _stopwatch.start();
-
     startTime = DateTime.now();
-
     Timer.periodic(const Duration(seconds: 1), (timer) {
       updateTimeElapsed();
     });
 
     if (_points.isNotEmpty) {
       removeAll();
-      _listOfPhotos.clear();
     }
 
-    if (listOfPoints == null) {
-      LocationSettings settings = const LocationSettings(distanceFilter: 10);
-      _subscription = Geolocator.getPositionStream(locationSettings: settings).listen((Position pos) {
-        locationReadings++;
-        updatePoints(RoutePoint(latitude: pos.latitude, longitude: pos.longitude));
+    LocationSettings settings = const LocationSettings(distanceFilter: 10);
+    _subscription = Geolocator.getPositionStream(locationSettings: settings).listen((Position pos) {
+      updatePoints(RoutePoint(latitude: pos.latitude, longitude: pos.longitude, hasPhoto: false));
 
-        updateDistanceTraveled();
-      });
-    } else {
-      _points = listOfPoints!;
-    }
+      updateDistanceTraveled();
+    });
   }
 
   void stopRecordPosition() {
     _subscription?.cancel();
     _stopwatch.stop();
     endTime = DateTime.now();
-
-    saveRoute();
   }
 
   void updatePoints(RoutePoint point) {
@@ -175,18 +162,12 @@ class MapRoute extends ChangeNotifier {
   }
 
   void addPhoto(File photoFile) async {
-    var byteData = await photoFile.readAsBytes();
-    var imageData = await decodeImageFromList(byteData);
-    _listOfPhotos.add(imageData);
+    imageDataList.add(photoFile.path);
+
+    var bytes = await photoFile.readAsBytes();
+    var image = await decodeImageFromList(bytes);
+    _mapImages.add(image);
     _points.last.hasPhoto = true;
     notifyListeners();
-
-    ByteData? bytes = await imageData.toByteData(format: ui.ImageByteFormat.png);
-    Uint8List data = bytes!.buffer.asUint8List();
-    photoData.add(data);
-  }
-
-  void saveRoute() {
-    Hive.box('mapRoutes').add(this);
   }
 }

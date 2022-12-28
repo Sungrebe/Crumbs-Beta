@@ -11,13 +11,11 @@ void main() {
   var mockHiveInterface = MockHiveInterface();
   var mockBox = MockBox();
 
-  var route1 = MapRoute(
-    listOfPoints: [
-      RoutePoint(latitude: 37.433001, longitude: -122.087954),
-    ],
-  );
+  var route1 = MapRoute();
+  route1.updatePoints(RoutePoint(latitude: 37.433001, longitude: -122.087954, hasPhoto: false));
 
-  var route2 = MapRoute(listOfPoints: [RoutePoint(latitude: 37.343020, longitude: -121.715906)]);
+  var route2 = MapRoute();
+  route2.updatePoints(RoutePoint(latitude: 37.343020, longitude: -121.715906, hasPhoto: false));
 
   setUp(() async {
     mockHiveInterface.registerAdapter(RoutePointAdapter());
@@ -27,9 +25,9 @@ void main() {
   group('saved tab tests', () {
     testWidgets('displays information about saved routes', (widgetTester) async {
       when(mockHiveInterface.openBox('mapRoutes')).thenAnswer((_) async {
-        await widgetTester.pumpWidget(MaterialApp(
+        await widgetTester.pumpWidget(const MaterialApp(
           home: Scaffold(
-            body: SavedTab(box: mockBox),
+            body: SavedTab(),
           ),
         ));
 

@@ -20,8 +20,8 @@ void main() {
 
   group('Route tests', () {
     MapRoute exampleRoute = MapRoute();
-    RoutePoint examplePoint1 = RoutePoint(latitude: 37.432483, longitude: -122.091763);
-    RoutePoint examplePoint2 = RoutePoint(latitude: 37.43251, longitude: -122.09173);
+    RoutePoint examplePoint1 = RoutePoint(latitude: 37.432483, longitude: -122.091763, hasPhoto: false);
+    RoutePoint examplePoint2 = RoutePoint(latitude: 37.43251, longitude: -122.09173, hasPhoto: false);
 
     double mapWidth = 600;
     double mapHeight = 800;
@@ -40,10 +40,7 @@ void main() {
     });
 
     test('updateDistanceTraveled', () {
-      RoutePoint kilometerFromPoint1 = RoutePoint(
-        latitude: 37.43821,
-        longitude: -122.09811,
-      );
+      RoutePoint kilometerFromPoint1 = RoutePoint(latitude: 37.43821, longitude: -122.09811, hasPhoto: false);
 
       exampleRoute.updatePoints(examplePoint1);
       exampleRoute.updatePoints(kilometerFromPoint1);

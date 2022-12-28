@@ -3,11 +3,14 @@ import 'package:flutter/material.dart';
 
 class RouteLayer extends CustomPainter {
   MapRoute route;
+  Size canvasSize = Size.zero;
 
   RouteLayer({required this.route}) : super(repaint: route);
 
   @override
   void paint(Canvas canvas, Size size) {
+    canvasSize = size;
+
     var routePixels = route.plotPoints(size.width, size.height, route.points);
     Paint routePaint = Paint()
       ..color = Colors.white
@@ -27,7 +30,7 @@ class RouteLayer extends CustomPainter {
         paintImage(
           canvas: canvas,
           rect: Rect.fromCircle(center: imagePixels[i], radius: 5),
-          image: route.listOfPhotos[i],
+          image: route.mapImages[i],
         );
       }
     }

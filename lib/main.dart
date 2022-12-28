@@ -36,7 +36,8 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Crumbs',
-      theme: ThemeData(fontFamily: 'Montserrat'),
+      theme: ThemeData(fontFamily: 'Montserrat', brightness: Brightness.light),
+      debugShowCheckedModeBanner: false,
       home: const HomePage(),
     );
   }
@@ -73,7 +74,7 @@ class _HomePageState extends State<HomePage> {
         }
       },
     ),
-    SavedTab(box: Hive.box('mapRoutes')),
+    const SavedTab(),
   ];
 
   @override
@@ -90,6 +91,9 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Crumbs'),
+      ),
       body: IndexedStack(
         index: _selectedIndex,
         children: _tabs,

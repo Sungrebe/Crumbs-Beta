@@ -75,9 +75,9 @@ void main() {
             var takePictureButton = find.byKey(const Key('take_picture_button'));
             expect(takePictureButton, findsOneWidget);
 
-            expect(testMapRoute.listOfPhotos.length, equals(0));
+            expect(testMapRoute.imageDataList.length, equals(0));
             tester.tap(takePictureButton).then((_) {
-              expect(testMapRoute.listOfPhotos.length, equals(1));
+              expect(testMapRoute.imageDataList.length, equals(1));
             });
           } else {
             body = const Center(child: CircularProgressIndicator());

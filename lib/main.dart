@@ -1,17 +1,32 @@
-import 'package:crumbs/tabs/route_tab/map_route_tab.dart';
+import 'package:crumbs/model/route_point.dart';
+import 'package:crumbs/tabs/camera_tab/camera_tab.dart';
+import 'package:crumbs/tabs/route_tab/route_tab.dart';
 import 'package:crumbs/model/map_route.dart';
+import 'package:crumbs/tabs/saved_tab/saved_tab.dart';
 
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 
-void main() {
-  runApp(
-    ChangeNotifierProvider<MapRoute>(
-      create: (context) => MapRoute(),
-      child: const App(),
-    ),
-  );
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Hive.initFlutter();
+  Hive.registerAdapter(RoutePointAdapter());
+  Hive.registerAdapter(MapRouteAdapter());
+
+  await Hive.openBox('mapRoutes');
+
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]).then((_) {
+    runApp(
+      ChangeNotifierProvider<MapRoute>(
+        create: (context) => MapRoute(),
+        child: const App(),
+      ),
+    );
+  });
 }
 
 class App extends StatelessWidget {
@@ -19,18 +34,17 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       title: 'Crumbs',
-      home: HomePage(title: 'Crumbs'),
+      theme: ThemeData(fontFamily: 'Montserrat', brightness: Brightness.light),
+      debugShowCheckedModeBanner: false,
+      home: const HomePage(),
     );
   }
 }
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key, required this.title}) : super(key: key);
-
-  final String title;
-
+  const HomePage({Key? key}) : super(key: key);
   @override
   State<HomePage> createState() => _HomePageState();
 }
@@ -39,10 +53,34 @@ class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
 
   static final List<Widget> _tabs = [
-    const MapRouteTab(key: Key('trail_tab')),
-    const SizedBox.expand(),
-    const SizedBox.expand(),
+    FutureBuilder(
+      future: Geolocator.requestPermission(),
+      builder: (BuildContext context, AsyncSnapshot<LocationPermission> snapshot) {
+        if ((snapshot.connectionState == ConnectionState.done) &&
+            (snapshot.data == LocationPermission.whileInUse || snapshot.data == LocationPermission.always)) {
+          return const MapRouteTab(key: Key('route_tab'));
+        } else {
+          return const Center(child: CircularProgressIndicator());
+        }
+      },
+    ),
+    FutureBuilder(
+      future: availableCameras(),
+      builder: (BuildContext context, AsyncSnapshot<List<CameraDescription>?> snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          return CameraTab(key: const Key('camera_tab'), cameras: snapshot.data);
+        } else {
+          return const Center(child: CircularProgressIndicator());
+        }
+      },
+    ),
+    const SavedTab(),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -53,35 +91,12 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: FutureBuilder(
-          future: Geolocator.requestPermission(),
-          builder: (BuildContext context, AsyncSnapshot<LocationPermission> permissionSnapshot) {
-            Widget body = const SizedBox.shrink();
-
-            if (permissionSnapshot.hasError) {
-              body = const Text('An error occurred.');
-            } else {
-              LocationPermission? permission = permissionSnapshot.data;
-
-              switch (permissionSnapshot.connectionState) {
-                case ConnectionState.none:
-                  break;
-                case ConnectionState.waiting:
-                  body = const CircularProgressIndicator();
-                  break;
-                case ConnectionState.active:
-                case ConnectionState.done:
-                  if (permission == LocationPermission.whileInUse) {
-                    body = _tabs.elementAt(_selectedIndex);
-                  }
-                  break;
-              }
-            }
-
-            return body;
-          },
-        ),
+      appBar: AppBar(
+        title: const Text('Crumbs'),
+      ),
+      body: IndexedStack(
+        index: _selectedIndex,
+        children: _tabs,
       ),
       bottomNavigationBar: BottomNavigationBar(
         key: const Key('bottom_navigation_bar'),

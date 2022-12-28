@@ -1,24 +1,32 @@
 import 'dart:async';
 
+import 'package:crumbs/model/route_point.dart';
 import 'package:crumbs/model/map_route.dart';
-
 import 'package:flutter_test/flutter_test.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:mockito/annotations.dart';
+import 'package:mockito/mockito.dart';
 
+import 'route_test.mocks.dart';
+
+@GenerateMocks([Box, HiveInterface])
 void main() {
+  setUp(() async {
+    var mockHiveInterface = MockHiveInterface();
+    mockHiveInterface.registerAdapter(RoutePointAdapter());
+    mockHiveInterface.registerAdapter(MapRouteAdapter());
+    when(mockHiveInterface.openBox('mapRoutes')).thenAnswer((_) async => MockBox());
+  });
+
   group('Route tests', () {
     MapRoute exampleRoute = MapRoute();
-    RoutePoint examplePoint1 = RoutePoint(
-      latitude: 37.432483,
-      longitude: -122.091763,
-    );
-    RoutePoint examplePoint2 = RoutePoint(
-      latitude: 37.43251,
-      longitude: -122.09173,
-    );
+    RoutePoint examplePoint1 = RoutePoint(latitude: 37.432483, longitude: -122.091763, hasPhoto: false);
+    RoutePoint examplePoint2 = RoutePoint(latitude: 37.43251, longitude: -122.09173, hasPhoto: false);
 
     double mapWidth = 600;
     double mapHeight = 800;
 
+    List<RoutePoint> testPointList = [examplePoint1, examplePoint2];
     List<Offset> examplePixelList = [];
 
     test('updateTimeElapsed', () {
@@ -32,10 +40,7 @@ void main() {
     });
 
     test('updateDistanceTraveled', () {
-      RoutePoint kilometerFromPoint1 = RoutePoint(
-        latitude: 37.43821,
-        longitude: -122.09811,
-      );
+      RoutePoint kilometerFromPoint1 = RoutePoint(latitude: 37.43821, longitude: -122.09811, hasPhoto: false);
 
       exampleRoute.updatePoints(examplePoint1);
       exampleRoute.updatePoints(kilometerFromPoint1);
@@ -71,7 +76,7 @@ void main() {
 
     test('plotRoute', () {
       exampleRoute.updatePoints(examplePoint1);
-      examplePixelList = exampleRoute.plotPoints(mapWidth, mapHeight);
+      examplePixelList = exampleRoute.plotPoints(mapWidth, mapHeight, testPointList);
 
       expect(examplePixelList.first.dx, equals(mapWidth / 2));
       expect(examplePixelList.first.dy, equals(mapHeight / 2));
@@ -80,10 +85,16 @@ void main() {
     test('drawLineBetweenPixels', () {
       exampleRoute.updatePoints(examplePoint1);
       exampleRoute.updatePoints(examplePoint2);
-      examplePixelList = exampleRoute.plotPoints(mapWidth, mapHeight);
+      examplePixelList = exampleRoute.plotPoints(mapWidth, mapHeight, testPointList);
 
       var exampleRoutePath = exampleRoute.drawLineBetweenPixels(examplePixelList);
       expect(exampleRoutePath.contains(examplePixelList[1]), equals(true));
+    });
+
+    test('saveRoute', () async {
+      var mockBox = MockBox();
+      when(mockBox.add(exampleRoute)).thenAnswer((_) async => 0);
+      when(mockBox.getAt(0)).thenAnswer((_) => exampleRoute);
     });
   });
 }

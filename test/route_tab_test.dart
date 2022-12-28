@@ -1,4 +1,4 @@
-import 'package:crumbs/tabs/route_tab/map_route_tab.dart';
+import 'package:crumbs/tabs/route_tab/route_tab.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';

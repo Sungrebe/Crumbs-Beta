@@ -1,16 +1,6 @@
-# crumbs
+TrailCrumbs is an app that will allow you to navigate in remote areas without getting lost. As you walk, the app will plot a virtual trail of "crumbs", like the breadcrumbs that Hansel and Gretel used to escape the woods. If you are lost, you can follow the virtual crumbs back to your starting location. The black dot marks your starting location, while the red dot represents your current location. This app works without an internet connection (it just uses geolocation) so you can use it in remote areas.
 
-A new Flutter project.
-
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+TrailCrumbs beta currently has:
+- The ability to create a new route
+- You can take pictures using the TrailCrumbs camera while walking
+- You can save routes

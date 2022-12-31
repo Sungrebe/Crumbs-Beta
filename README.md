@@ -8,7 +8,7 @@ TrailCrumbs beta currently has:
 Images:
 
 <img src="https://user-images.githubusercontent.com/52579753/210152473-a04ca2ca-9ef3-4c87-a457-c3029a52b7b9.png" width=25% height=25%>
-![1290x2796bb-1](https://user-images.githubusercontent.com/52579753/210152537-7ecee9d2-6f69-498c-b44d-8b292e39bafb.png =250x250)
-![1290x2796bb-2](https://user-images.githubusercontent.com/52579753/210152541-ec11234c-1643-4001-9d49-91aadcc2e358.png =250x250)
-![1290x2796bb-3](https://user-images.githubusercontent.com/52579753/210152543-414d0e40-29e7-4183-a894-7891cb597728.png =250x250)
-![1290x2796bb-4](https://user-images.githubusercontent.com/52579753/210152545-fa161a7c-8896-4a35-a636-073fdc843253.png =250x250)
+<img src="https://user-images.githubusercontent.com/52579753/210152537-7ecee9d2-6f69-498c-b44d-8b292e39bafb.png" width=25% height=25%>
+<img src="https://user-images.githubusercontent.com/52579753/210152541-ec11234c-1643-4001-9d49-91aadcc2e358.png" width=25% height=25%>
+<img src="https://user-images.githubusercontent.com/52579753/210152543-414d0e40-29e7-4183-a894-7891cb597728.png" width=25% height=25%>
+<img src="https://user-images.githubusercontent.com/52579753/210152545-fa161a7c-8896-4a35-a636-073fdc843253.png" width=25% height=25%>

@@ -1,8 +1,8 @@
-import 'package:crumbs/model/route_point.dart';
-import 'package:crumbs/tabs/camera_tab/camera_tab.dart';
-import 'package:crumbs/tabs/route_tab/route_tab.dart';
-import 'package:crumbs/model/map_route.dart';
-import 'package:crumbs/tabs/saved_tab/saved_tab.dart';
+import 'package:trail_crumbs/model/route_point.dart';
+import 'package:trail_crumbs/tabs/camera_tab/camera_tab.dart';
+import 'package:trail_crumbs/tabs/route_tab/route_tab.dart';
+import 'package:trail_crumbs/model/map_route.dart';
+import 'package:trail_crumbs/tabs/saved_tab/saved_tab.dart';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
@@ -35,7 +35,7 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Crumbs',
+      title: 'Trail Crumbs',
       theme: ThemeData(fontFamily: 'Montserrat', brightness: Brightness.light),
       debugShowCheckedModeBanner: false,
       home: const HomePage(),
@@ -92,7 +92,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Crumbs'),
+        title: const Text('Trail Crumbs'),
       ),
       body: IndexedStack(
         index: _selectedIndex,

@@ -1,6 +1,10 @@
-import 'package:crumbs/model/map_route.dart';
-import 'package:crumbs/tabs/route_tab/route_layer.dart';
-import 'package:crumbs/tabs/route_tab/map_layer.dart';
+import 'dart:ui';
+
+import 'package:flutter/foundation.dart';
+import 'package:flutter/rendering.dart';
+import 'package:trail_crumbs/model/map_route.dart';
+import 'package:trail_crumbs/tabs/route_tab/route_layer.dart';
+import 'package:trail_crumbs/tabs/route_tab/map_layer.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
@@ -15,11 +19,21 @@ class MapRouteTab extends StatefulWidget {
 class _MapRouteTabState extends State<MapRouteTab> {
   bool _recordPosition = false;
   late final Box box;
+  final globalKey = GlobalKey();
 
   @override
   void initState() {
     super.initState();
     box = Hive.box('mapRoutes');
+  }
+
+  Future<Uint8List> _saveImageOfRoute() async {
+    RenderRepaintBoundary boundary = globalKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
+    var image = await boundary.toImage();
+    var pngData = await image.toByteData(format: ImageByteFormat.png);
+    var pngBytes = pngData!.buffer.asUint8List();
+
+    return pngBytes;
   }
 
   @override
@@ -39,13 +53,16 @@ class _MapRouteTabState extends State<MapRouteTab> {
             alignment: Alignment.lerp(Alignment.center, Alignment.topCenter, 0.05)!,
             child: Consumer<MapRoute>(
               builder: (context, currentRoute, child) {
-                return CustomPaint(
-                  key: const Key('route_layer'),
-                  size: Size(
-                    MediaQuery.of(context).size.width * 0.95,
-                    MediaQuery.of(context).size.height * 0.7,
+                return RepaintBoundary(
+                  key: globalKey,
+                  child: CustomPaint(
+                    key: const Key('route_layer'),
+                    size: Size(
+                      MediaQuery.of(context).size.width * 0.95,
+                      MediaQuery.of(context).size.height * 0.7,
+                    ),
+                    painter: RouteLayer(route: currentRoute),
                   ),
-                  painter: RouteLayer(route: currentRoute),
                 );
               },
             ),
@@ -81,6 +98,8 @@ class _MapRouteTabState extends State<MapRouteTab> {
                             actions: [
                               TextButton(
                                 onPressed: () async {
+                                  currentMapRoute.imageOfRouteData = await _saveImageOfRoute();
+
                                   box.add(
                                     MapRoute()
                                       ..listOfPoints = currentMapRoute.listOfPoints
@@ -88,7 +107,8 @@ class _MapRouteTabState extends State<MapRouteTab> {
                                       ..endTime = currentMapRoute.endTime
                                       ..distanceTraveled = currentMapRoute.distanceTraveled
                                       ..imageDataList = currentMapRoute.imageDataList
-                                      ..name = _textController.text,
+                                      ..name = _textController.text
+                                      ..imageOfRouteData = currentMapRoute.imageOfRouteData,
                                   );
 
                                   Navigator.of(context).pop();

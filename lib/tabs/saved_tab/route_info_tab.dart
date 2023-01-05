@@ -1,9 +1,7 @@
 import 'dart:io';
 
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:crumbs/model/map_route.dart';
-import 'package:crumbs/tabs/route_tab/map_layer.dart';
-import 'package:crumbs/tabs/route_tab/route_layer.dart';
+import 'package:trail_crumbs/model/map_route.dart';
 import 'package:flutter/material.dart';
 
 class RouteInfoArguments {
@@ -65,24 +63,14 @@ class _RouteInfoTabState extends State<RouteInfoTab> {
                   ],
                 ),
               ),
-              Stack(
-                children: [
-                  CustomPaint(
-                    size: Size(
-                      MediaQuery.of(context).size.width * 0.95,
-                      MediaQuery.of(context).size.height * 0.7,
-                    ),
-                    painter: MapLayer(),
-                  ),
-                  CustomPaint(
-                    size: Size(
-                      MediaQuery.of(context).size.width * 0.95,
-                      MediaQuery.of(context).size.height * 0.7,
-                    ),
-                    painter: RouteLayer(route: routeInfo.route),
-                  )
-                ],
-              )
+              SizedBox(
+                width: 600,
+                height: 800,
+                child: Container(
+                  color: Colors.green,
+                  child: Image.memory(routeInfo.route.imageOfRouteData),
+                ),
+              ),
             ],
           ),
         ),

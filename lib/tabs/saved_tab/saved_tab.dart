@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:crumbs/tabs/saved_tab/route_info_tab.dart';
+import 'package:trail_crumbs/tabs/saved_tab/route_info_tab.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';

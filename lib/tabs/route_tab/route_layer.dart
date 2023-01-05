@@ -1,4 +1,4 @@
-import 'package:crumbs/model/map_route.dart';
+import 'package:trail_crumbs/model/map_route.dart';
 import 'package:flutter/material.dart';
 
 class RouteLayer extends CustomPainter {

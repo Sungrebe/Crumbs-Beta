@@ -1,5 +1,5 @@
 import 'package:camera/camera.dart';
-import 'package:crumbs/tabs/camera_tab/route_camera.dart';
+import 'package:trail_crumbs/tabs/camera_tab/route_camera.dart';
 import 'package:flutter/material.dart';
 
 class CameraTab extends StatefulWidget {

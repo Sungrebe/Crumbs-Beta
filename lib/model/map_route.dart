@@ -2,7 +2,8 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:ui' as ui;
 
-import 'package:crumbs/model/route_point.dart';
+import 'package:flutter/foundation.dart';
+import 'package:trail_crumbs/model/route_point.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -28,6 +29,9 @@ class MapRoute extends ChangeNotifier {
 
   @HiveField(5, defaultValue: 'Untitled Route')
   String name = '';
+
+  @HiveField(6)
+  Uint8List imageOfRouteData = Uint8List(0);
 
   final List<RoutePoint> _points = [];
   final List<ui.Image> _mapImages = [];

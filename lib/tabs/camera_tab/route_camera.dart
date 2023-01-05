@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:camera/camera.dart';
-import 'package:crumbs/model/map_route.dart';
+import 'package:trail_crumbs/model/map_route.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

@@ -22,13 +22,14 @@ class MapRouteAdapter extends TypeAdapter<MapRoute> {
       ..endTime = fields[2] as DateTime?
       ..distanceTraveled = fields[3] as double
       ..imageDataList = (fields[4] as List).cast<String>()
-      ..name = fields[5] == null ? 'Untitled Route' : fields[5] as String;
+      ..name = fields[5] == null ? 'Untitled Route' : fields[5] as String
+      ..imageOfRouteData = fields[6] as Uint8List;
   }
 
   @override
   void write(BinaryWriter writer, MapRoute obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(7)
       ..writeByte(0)
       ..write(obj.listOfPoints)
       ..writeByte(1)
@@ -40,7 +41,9 @@ class MapRouteAdapter extends TypeAdapter<MapRoute> {
       ..writeByte(4)
       ..write(obj.imageDataList)
       ..writeByte(5)
-      ..write(obj.name);
+      ..write(obj.name)
+      ..writeByte(6)
+      ..write(obj.imageOfRouteData);
   }
 
   @override

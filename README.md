@@ -22,5 +22,3 @@ Above: When you end the trail plotting, a pop-up displays so that you can save t
 
 <img src="https://user-images.githubusercontent.com/52579753/210152545-fa161a7c-8896-4a35-a636-073fdc843253.png" width=25% height=25%>
 When you save the trail, it will show up in your saved routes along with some information about the trail name and duration. If you click on the saved trail card, you can see additional information, such as the images you took while walking and a picture of the route.
-
-<b>Note</b> There is a bug in the beta version, the route picture does not show correctly when the route is saved. I am working on fixing this.
